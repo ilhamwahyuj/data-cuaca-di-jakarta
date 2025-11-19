@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Cuaca Jakarta - Open Meteo</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">
+        Data Cuaca Jakarta (Open-Meteo API)
+    </h2>
+
+    <div id="loading" class="text-center text-lg text-gray-600">
+        Loading data...
+    </div>
+
+    <div class="overflow-x-auto">
+        <table id="weatherTable" class="hidden mx-auto w-full max-w-4xl border border-gray-300 shadow-lg rounded-lg bg-white">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left">Time</th>
+                    <th class="px-4 py-3 text-left">Temperature (°C)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-gray-200">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL =
+        "https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8&hourly=temperature_2m";
+
+        async function getWeatherData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                const times = data.hourly.time;
+                const temps = data.hourly.temperature_2m;
+
+                const tableBody = document.getElementById("tableBody");
+
+                for (let i = 0; i < 10; i++) {
+                    const row = document.createElement("tr");
+                    row.className = "hover:bg-gray-100";
+
+                    const timeCell = document.createElement("td");
+                    timeCell.textContent = times[i];
+                    timeCell.className = "px-4 py-3";
+
+                    const tempCell = document.createElement("td");
+                    tempCell.textContent = temps[i];
+                    tempCell.className = "px-4 py-3";
+
+                    row.appendChild(timeCell);
+                    row.appendChild(tempCell);
+                    tableBody.appendChild(row);
+                }
+
+                document.getElementById("loading").classList.add("hidden");
+                document.getElementById("weatherTable").classList.remove("hidden");
+
+            } catch (error) {
+                document.getElementById("loading").innerHTML =
+                    "Gagal memuat data cuaca.";
+                console.error(error);
+            }
+        }
+
+        getWeatherData();
+    </script>
+
+</body>
+</html>
